@@ -1,0 +1,625 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyMate AI - 408 选择题练习</title>
+  <style>
+    :root{
+      --bg:#f3efe8;
+      --card:#faf8f5;
+      --text:#18212f;
+      --muted:#4b5563;
+      --primary:#1e3a5f;
+      --primary-weak:#e4ebf3;
+      --accent:#c9a84c;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --border:#e5e7eb;
+      --shadow:0 12px 30px rgba(15,23,42,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+      background:radial-gradient(circle at top, #f8f4ee 0%, var(--bg) 48%, #efe8dc 100%);
+      color:var(--text);
+    }
+    .app{
+      max-width:1100px;
+      margin:0 auto;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      padding:24px;
+      gap:18px;
+    }
+    .header{
+      background:rgba(250,248,245,.84);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,.55);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:20px 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+    .brand h1{margin:0;font-size:24px;line-height:1.2;}
+    .brand p{margin:6px 0 0;color:var(--muted);font-size:14px;}
+    .header-tools{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-left:auto;}
+    .stats{display:flex;gap:12px;flex-wrap:wrap;}
+    .stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 14px;min-width:110px;}
+    .stat .label{display:block;color:var(--muted);font-size:12px;margin-bottom:4px;}
+    .stat .value{font-weight:700;font-size:18px;}
+    .toggle{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 14px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:var(--card);
+      color:var(--text);
+      font-size:14px;
+      font-weight:700;
+      white-space:nowrap;
+      cursor:pointer;
+      user-select:none;
+    }
+    .toggle input{position:absolute;opacity:0;pointer-events:none;}
+    .switch{
+      width:48px;
+      height:28px;
+      border-radius:999px;
+      background:#d1d5db;
+      padding:3px;
+      display:inline-flex;
+      align-items:center;
+      transition:.2s ease;
+      box-shadow:inset 0 0 0 1px rgba(15,23,42,.04);
+    }
+    .switch-knob{
+      width:22px;
+      height:22px;
+      border-radius:50%;
+      background:#fff;
+      box-shadow:0 4px 10px rgba(15,23,42,.16);
+      transform:translateX(0);
+      transition:.2s ease;
+    }
+    .toggle input:checked + .switch{background:var(--primary);}
+    .toggle input:checked + .switch .switch-knob{transform:translateX(20px);}
+    .icon-btn{
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:999px;
+      background:var(--card);
+      color:var(--primary);
+      border:1px solid var(--border);
+      font-size:20px;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 4px 14px rgba(15,23,42,.06);
+      transition:.2s ease;
+    }
+    .icon-btn:hover{transform:translateY(-1px);border-color:#bfd3ff;}
+    .tabs{display:flex;gap:10px;flex-wrap:wrap;}
+    .tab{border:1px solid var(--border);background:#fff;color:var(--text);padding:10px 16px;border-radius:999px;font-size:14px;cursor:pointer;transition:.2s ease;}
+    .tab:hover{transform:translateY(-1px);border-color:#bfd3ff;}
+    .tab.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 8px 18px rgba(30,58,95,.18);}
+    .main{display:grid;grid-template-columns:1fr;gap:18px;flex:1;}
+    .panel{background:rgba(250,248,245,.96);border:1px solid rgba(229,231,235,.95);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;}
+    .question-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;}
+    .question-meta{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;}
+    .badge{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:rgba(201,168,76,.16);color:#7b5f16;font-size:13px;font-weight:700;white-space:nowrap;}
+    .progress{font-size:13px;color:var(--muted);white-space:nowrap;margin-top:2px;}
+    .timer{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:78px;
+      padding:7px 12px;
+      border-radius:999px;
+      border:1px solid #d7e0ec;
+      background:#eef2f7;
+      color:var(--primary);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.4px;
+      transition:.2s ease;
+    }
+    .timer.danger{color:var(--danger);background:#fff1f2;border-color:#fecaca;}
+    .hidden{display:none !important;}
+    .question-text{font-size:22px;line-height:1.55;margin:0 0 18px;font-weight:700;letter-spacing:.2px;}
+    .options{display:grid;gap:12px;}
+    .option{border:1px solid var(--border);border-radius:16px;padding:14px 16px;background:#fff;cursor:pointer;transition:.18s ease;display:flex;gap:12px;align-items:flex-start;text-align:left;}
+    .option:hover{border-color:#bfd3ff;transform:translateY(-1px);box-shadow:0 6px 18px rgba(37,99,235,.08);}
+    .option.selected{border-color:var(--primary);background:#eef2f7;box-shadow:0 0 0 3px rgba(37,99,235,.09);}
+    .option.correct{border-color:var(--success);background:linear-gradient(180deg, #f4fbf5, #ffffff);}
+    .option.wrong{border-color:var(--danger);background:linear-gradient(180deg, #fff4f4, #ffffff);}
+    .option-key{width:30px;height:30px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex:0 0 30px;background:#f3f4f6;color:#374151;}
+    .option.selected .option-key{background:var(--primary);color:#fff;}
+    .option.correct .option-key{background:var(--success);color:#fff;}
+    .option.wrong .option-key{background:var(--danger);color:#fff;}
+    .option-content{flex:1;}
+    .option-content .title{font-weight:600;margin-top:2px;line-height:1.55;}
+    .footer{background:rgba(250,248,245,.96);border:1px solid rgba(229,231,235,.95);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 22px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;}
+    .feedback{min-height:88px;border-radius:16px;border:1px dashed #cbd5e1;padding:14px 16px;background:#fbfaf7;}
+    .feedback.empty{color:var(--muted);display:flex;align-items:center;}
+    .feedback.success{border-color:rgba(22,163,74,.35);background:linear-gradient(180deg, #f5fbf6, #fffdfa);}
+    .feedback.error{border-color:rgba(220,38,38,.35);background:linear-gradient(180deg, #fff5f5, #fffdfa);}
+    .feedback .title{font-weight:800;margin-bottom:8px;}
+    .feedback .analysis{margin-top:8px;color:#374151;line-height:1.75;}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    .btn{border:none;border-radius:14px;padding:12px 18px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s ease;}
+    .btn:disabled{cursor:not-allowed;opacity:.55;}
+    .btn-primary{background:var(--primary);color:#fff;box-shadow:0 10px 20px rgba(30,58,95,.2);}
+    .btn-primary:hover:not(:disabled){transform:translateY(-1px);}
+    .btn-ghost{background:#fff;color:var(--text);border:1px solid var(--border);}
+    .help-popover{
+      position:fixed;
+      top:78px;
+      right:24px;
+      width:min(320px, calc(100vw - 32px));
+      background:rgba(255,255,255,.96);
+      border:1px solid rgba(229,231,235,.95);
+      border-radius:18px;
+      box-shadow:0 18px 36px rgba(15,23,42,.16);
+      padding:14px 16px;
+      z-index:50;
+      opacity:0;
+      transform:translateY(-8px) scale(.98);
+      pointer-events:none;
+      transition:.18s ease;
+    }
+    .help-popover.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+    .help-popover::before{
+      content:"";
+      position:absolute;
+      top:-7px;
+      right:18px;
+      width:12px;
+      height:12px;
+      background:rgba(255,255,255,.96);
+      border-left:1px solid rgba(229,231,235,.95);
+      border-top:1px solid rgba(229,231,235,.95);
+      transform:rotate(45deg);
+    }
+    .help-popover-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;}
+    .help-popover-title{margin:0;font-size:15px;}
+    .help-popover-close{
+      width:28px;
+      height:28px;
+      border:none;
+      border-radius:999px;
+      background:#f3f4f6;
+      color:#111827;
+      font-size:18px;
+      cursor:pointer;
+      line-height:1;
+    }
+    .help-popover-body{color:var(--text);line-height:1.6;font-size:13px;}
+    .help-popover-body ul{margin:8px 0 0;padding-left:16px;color:var(--muted);}
+    @media (max-width:900px){.footer{grid-template-columns:1fr}.actions{justify-content:flex-start}.header-tools{margin-left:0}.help-popover{top:72px;right:16px}}
+    @media (max-width:640px){.app{padding:14px}.panel,.footer,.header{padding:16px}.question-text{font-size:19px}.question-head{flex-direction:column}.question-meta{justify-content:flex-start}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand">
+        <h1>StudyMate AI · 408 选择题练习</h1>
+        <p>按科目切换题目，选择答案后查看对错和解析。</p>
+      </div>
+      <div class="header-tools">
+        <div class="stats">
+          <div class="stat">
+            <span class="label">当前科目</span>
+            <span class="value" id="currentSubject">数据结构</span>
+          </div>
+          <div class="stat">
+            <span class="label">已作答</span>
+            <span class="value"><span id="answeredCount">0</span>/12</span>
+          </div>
+          <div class="stat">
+            <span class="label">正确数</span>
+            <span class="value" id="correctCount">0</span>
+          </div>
+        </div>
+        <label class="toggle" for="timerToggle">
+          <span>计时器</span>
+          <input type="checkbox" id="timerToggle" aria-label="计时器开关" />
+          <span class="switch" aria-hidden="true"><span class="switch-knob"></span></span>
+        </label>
+        <button class="icon-btn" id="helpBtn" type="button" aria-label="查看使用说明">?</button>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="科目切换">
+      <button class="tab active" data-subject="数据结构">数据结构</button>
+      <button class="tab" data-subject="组成原理">组成原理</button>
+      <button class="tab" data-subject="操作系统">操作系统</button>
+      <button class="tab" data-subject="计算机网络">计算机网络</button>
+    </nav>
+
+    <main class="main">
+      <section class="panel">
+        <div class="question-head">
+          <div class="badge" id="questionSubject">数据结构</div>
+          <div class="question-meta">
+            <div class="progress" id="questionProgress">第 1 / 12 题</div>
+            <div class="timer hidden" id="questionTimer">01:30</div>
+          </div>
+        </div>
+        <h2 class="question-text" id="questionText"></h2>
+        <div class="options" id="options"></div>
+      </section>
+    </main>
+
+    <section class="footer">
+      <div id="feedback" class="feedback empty">请选择一个答案，然后点击“提交答案”。</div>
+      <div class="actions">
+        <button class="btn btn-ghost" id="prevBtn">上一题</button>
+        <button class="btn btn-ghost" id="nextBtn">下一题</button>
+        <button class="btn btn-ghost" id="randomBtn">随机一题</button>
+        <button class="btn btn-primary" id="submitBtn">提交答案</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="help-popover" id="helpPopover" aria-hidden="true">
+    <div class="help-popover-header">
+      <h3 class="help-popover-title">使用说明</h3>
+      <button class="help-popover-close" id="helpCloseBtn" type="button" aria-label="关闭说明">×</button>
+    </div>
+    <div class="help-popover-body">
+      <div>这是一套单题练习页面，适合按科目刷题和查看解析。</div>
+      <ul>
+        <li>顶部按科目切换题目。</li>
+        <li>中间区域选择 A / B / C / D。</li>
+        <li>提交后会显示正误提示与解析。</li>
+        <li>打开计时器后，每题限时 90 秒。</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const TIMER_SECONDS = 90;
+    const questions = [
+      { subject: "数据结构", text: "二叉树的层序遍历通常需要借助哪种数据结构？", options: ["栈", "队列", "数组", "哈希表"], answer: 1, analysis: "层序遍历按层访问结点，满足先进入先访问的 FIFO 特性，因此通常使用队列辅助实现。" },
+      { subject: "数据结构", text: "下列排序算法中，平均时间复杂度为 O(n log n) 的是：", options: ["直接插入排序", "归并排序", "冒泡排序", "简单选择排序"], answer: 1, analysis: "归并排序采用分治策略，递归拆分后再线性合并，因此平均时间复杂度为 O(n log n)；插入、冒泡和选择排序的平均时间复杂度均为 O(n^2)。" },
+      { subject: "数据结构", text: "哈希表中发生冲突时，下面哪种处理方法属于开放定址法？", options: ["拉链法", "线性探测再散列", "建立公共溢出区", "二叉排序树法"], answer: 1, analysis: "开放定址法的核心是当发生冲突时，按某种探查序列寻找下一个空地址。线性探测再散列就是典型的开放定址法。" },
+      { subject: "组成原理", text: "补码表示的一个核心优点是：", options: ["只能表示正数", "减法可以转换为加法", "无法表示零", "必须使用十进制电路"], answer: 1, analysis: "补码系统下，减法可以转化为加法统一处理，硬件实现更简单，也是计算机中最常用的带符号数表示方法。" },
+      { subject: "组成原理", text: "DMA 方式适合用于：", options: ["CPU 与寄存器之间的单字传输", "高速外设与主存之间的大批量数据传输", "仅用于程序控制方式无法工作的场景", "只能传输指令，不能传输数据"], answer: 1, analysis: "DMA 由 DMA 控制器直接在外设与主存之间传送数据，CPU 只需在开始和结束时参与，适合大批量、高速数据传输。" },
+      { subject: "组成原理", text: "关于中断响应过程，下列说法正确的是：", options: ["CPU 响应中断后先执行中断服务程序，再保存现场", "CPU 响应中断后通常先保存现场，再转入中断服务程序", "中断响应过程中 CPU 不需要识别中断源", "中断处理完成后不需要恢复现场"], answer: 1, analysis: "CPU 响应中断后，一般先保护程序断点和现场信息，随后转入相应的中断服务程序；服务完成后再恢复现场并返回原程序。" },
+      { subject: "操作系统", text: "在页面置换算法中，最容易产生 Belady 异常的是：", options: ["FIFO", "LRU", "OPT", "CLOCK"], answer: 0, analysis: "FIFO 置换算法只按照页面进入内存的先后顺序淘汰页面，可能出现分配更多物理块反而缺页次数增多的 Belady 异常。" },
+      { subject: "操作系统", text: "死锁产生的四个必要条件中，不包括下面哪一项？", options: ["互斥条件", "请求与保持条件", "资源可共享条件", "循环等待条件"], answer: 2, analysis: "死锁的四个必要条件是互斥、请求与保持、不可抢占和循环等待。资源可共享并不是死锁条件，反而与互斥条件相反。" },
+      { subject: "操作系统", text: "下列文件分配方式中，既支持随机访问又便于文件扩展的是：", options: ["连续分配", "链接分配", "索引分配", "顺序分配"], answer: 2, analysis: "索引分配通过索引块记录文件各数据块的地址，既能直接访问，也比较容易扩展；连续分配顺序访问效率高，但扩展困难。" },
+      { subject: "计算机网络", text: "CSMA/CD 协议中，发生碰撞后发送站点通常采取的措施是：", options: ["立即停止并永久放弃发送", "立刻重发，不做等待", "执行二进制指数退避后重传", "只接收不发送"], answer: 2, analysis: "CSMA/CD 用于共享式以太网，检测到碰撞后会先发送干扰信号，再执行随机退避，通常采用二进制指数退避策略后重传。" },
+      { subject: "计算机网络", text: "将 192.168.1.0/24 平均划分为 4 个等大小子网后，每个子网的前缀长度是：", options: ["/25", "/26", "/27", "/28"], answer: 1, analysis: "从 /24 划分为 4 个子网，需要借用 2 位主机位作为子网位，因此前缀长度变为 /26。每个子网包含 64 个地址。" },
+      { subject: "计算机网络", text: "TCP 拥塞控制中，慢开始阶段的特点是：", options: ["拥塞窗口线性增长", "拥塞窗口指数增长", "拥塞窗口保持不变", "拥塞窗口随机波动"], answer: 1, analysis: "慢开始阶段中，拥塞窗口 cwnd 每经过一个 RTT 近似翻倍，因此呈指数增长；当达到阈值后进入拥塞避免阶段，转为线性增长。" }
+    ];
+
+    const state = {
+      currentIndex: 0,
+      selected: null,
+      submitted: false,
+      expired: false,
+      score: 0,
+      done: new Array(questions.length).fill(false),
+      correct: new Array(questions.length).fill(false),
+      timerEnabled: false,
+      timerRemaining: TIMER_SECONDS,
+      timerId: null
+    };
+
+    const els = {
+      currentSubject: document.getElementById("currentSubject"),
+      answeredCount: document.getElementById("answeredCount"),
+      correctCount: document.getElementById("correctCount"),
+      timerToggle: document.getElementById("timerToggle"),
+      helpBtn: document.getElementById("helpBtn"),
+      helpPopover: document.getElementById("helpPopover"),
+      helpCloseBtn: document.getElementById("helpCloseBtn"),
+      questionSubject: document.getElementById("questionSubject"),
+      questionProgress: document.getElementById("questionProgress"),
+      questionTimer: document.getElementById("questionTimer"),
+      questionText: document.getElementById("questionText"),
+      options: document.getElementById("options"),
+      feedback: document.getElementById("feedback"),
+      submitBtn: document.getElementById("submitBtn"),
+      prevBtn: document.getElementById("prevBtn"),
+      nextBtn: document.getElementById("nextBtn"),
+      randomBtn: document.getElementById("randomBtn"),
+      tabs: Array.from(document.querySelectorAll(".tab"))
+    };
+
+    function formatTime(totalSeconds){
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function clearTimer(){
+      if (state.timerId !== null) {
+        clearInterval(state.timerId);
+        state.timerId = null;
+      }
+    }
+
+    function renderTimer(){
+      if (!state.timerEnabled || state.submitted || state.expired) {
+        els.questionTimer.classList.add("hidden");
+        els.questionTimer.classList.remove("danger");
+        return;
+      }
+      els.questionTimer.classList.remove("hidden");
+      els.questionTimer.textContent = formatTime(state.timerRemaining);
+      els.questionTimer.classList.toggle("danger", state.timerRemaining <= 10);
+    }
+
+    function renderStats(){
+      const answered = state.done.filter(Boolean).length;
+      els.answeredCount.textContent = answered;
+      els.correctCount.textContent = state.correct.filter(Boolean).length;
+    }
+
+    function updateActionButtons(){
+      els.submitBtn.disabled = state.submitted || state.expired;
+      els.prevBtn.disabled = state.currentIndex === 0;
+      els.nextBtn.disabled = state.currentIndex === questions.length - 1;
+    }
+
+    function setActiveTab(subject){
+      els.tabs.forEach(tab => tab.classList.toggle("active", tab.dataset.subject === subject));
+    }
+
+    function renderOptions(){
+      const q = questions[state.currentIndex];
+      const nodes = Array.from(els.options.querySelectorAll(".option"));
+      nodes.forEach((node, idx) => {
+        node.classList.toggle("selected", state.selected === idx && !state.submitted);
+        node.classList.toggle("correct", state.submitted && idx === q.answer);
+        node.classList.toggle("wrong", state.submitted && state.selected === idx && idx !== q.answer);
+        node.setAttribute("aria-pressed", state.selected === idx ? "true" : "false");
+        node.disabled = state.submitted || state.expired;
+      });
+    }
+
+    function showResult(){
+      const q = questions[state.currentIndex];
+      const isCorrect = state.selected === q.answer;
+      const answerLetter = String.fromCharCode(65 + q.answer);
+      const selectedLetter = state.selected === null ? "未选择" : String.fromCharCode(65 + state.selected);
+      els.feedback.className = `feedback ${isCorrect ? "success" : "error"}`;
+      els.feedback.innerHTML = `
+        <div class="title">${isCorrect ? "回答正确！" : "回答错误。"}</div>
+        <div>你的答案：<strong>${selectedLetter}</strong>；正确答案：<strong>${answerLetter}</strong></div>
+        <div class="analysis">${q.analysis}</div>
+      `;
+      renderOptions();
+    }
+
+    function renderIdleFeedback(){
+      els.feedback.className = "feedback empty";
+      els.feedback.textContent = "请选择一个答案，然后点击“提交答案”。";
+    }
+
+    function handleTimerExpired(){
+      if (state.submitted || state.expired) return;
+      if (state.selected !== null) {
+        submitAnswer(true);
+        return;
+      }
+      state.expired = true;
+      state.done[state.currentIndex] = true;
+      state.correct[state.currentIndex] = false;
+      clearTimer();
+      els.feedback.className = "feedback error";
+      els.feedback.innerHTML = `
+        <div class="title">时间已到</div>
+        <div>本题未选择答案，已标记为超时。切换题目后会重新计时。</div>
+      `;
+      renderOptions();
+      renderStats();
+      renderTimer();
+      updateActionButtons();
+    }
+
+    function startTimer(){
+      clearTimer();
+      if (!state.timerEnabled || state.submitted || state.expired) {
+        renderTimer();
+        return;
+      }
+      state.timerRemaining = TIMER_SECONDS;
+      renderTimer();
+      state.timerId = setInterval(() => {
+        if (!state.timerEnabled || state.submitted || state.expired) {
+          clearTimer();
+          renderTimer();
+          return;
+        }
+        state.timerRemaining -= 1;
+        if (state.timerRemaining <= 0) {
+          state.timerRemaining = 0;
+          renderTimer();
+          clearTimer();
+          handleTimerExpired();
+          return;
+        }
+        renderTimer();
+      }, 1000);
+    }
+
+    function renderQuestion(){
+      const q = questions[state.currentIndex];
+      els.currentSubject.textContent = q.subject;
+      els.questionSubject.textContent = q.subject;
+      els.questionProgress.textContent = `第 ${state.currentIndex + 1} / ${questions.length} 题`;
+      els.questionText.textContent = q.text;
+      setActiveTab(q.subject);
+
+      els.options.innerHTML = "";
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.type = "button";
+        btn.setAttribute("aria-pressed", "false");
+        btn.disabled = state.submitted || state.expired;
+        btn.innerHTML = `
+          <span class="option-key">${String.fromCharCode(65 + idx)}</span>
+          <span class="option-content"><div class="title">${opt}</div></span>
+        `;
+        btn.addEventListener("click", () => {
+          if (state.submitted || state.expired) return;
+          state.selected = idx;
+          renderOptions();
+          els.feedback.className = "feedback empty";
+          els.feedback.textContent = "已选择答案，点击“提交答案”查看结果。";
+        });
+        els.options.appendChild(btn);
+      });
+
+      if (state.submitted) {
+        showResult();
+      } else {
+        renderIdleFeedback();
+      }
+
+      renderOptions();
+      updateActionButtons();
+      renderStats();
+      if (state.timerEnabled && !state.submitted && !state.expired) {
+        startTimer();
+      } else {
+        clearTimer();
+        renderTimer();
+      }
+    }
+
+    function submitAnswer(fromTimer = false){
+      if (state.selected === null) {
+        if (fromTimer) {
+          handleTimerExpired();
+          return;
+        }
+        els.feedback.className = "feedback error";
+        els.feedback.innerHTML = `
+          <div class="title">还没有选择答案</div>
+          <div>请先在 A / B / C / D 中选择一个选项，再提交。</div>
+        `;
+        return;
+      }
+      if (!state.done[state.currentIndex]) {
+        state.done[state.currentIndex] = true;
+        if (state.selected === questions[state.currentIndex].answer) {
+          state.correct[state.currentIndex] = true;
+          state.score += 1;
+        } else {
+          state.correct[state.currentIndex] = false;
+        }
+      } else {
+        state.correct[state.currentIndex] = state.selected === questions[state.currentIndex].answer;
+      }
+      state.submitted = true;
+      state.expired = false;
+      clearTimer();
+      showResult();
+      renderStats();
+      renderTimer();
+      updateActionButtons();
+    }
+
+    function goTo(index){
+      clearTimer();
+      state.currentIndex = index;
+      state.selected = null;
+      state.submitted = false;
+      state.expired = false;
+      renderQuestion();
+    }
+
+    function goToRandomQuestion(){
+      const currentSubject = questions[state.currentIndex].subject;
+      const sameSubjectIndices = questions
+        .map((q, idx) => ({ q, idx }))
+        .filter(item => item.q.subject === currentSubject)
+        .map(item => item.idx);
+      if (sameSubjectIndices.length === 0) return;
+      let nextIndex = sameSubjectIndices[Math.floor(Math.random() * sameSubjectIndices.length)];
+      if (sameSubjectIndices.length > 1 && nextIndex === state.currentIndex) {
+        const alternatives = sameSubjectIndices.filter(idx => idx !== state.currentIndex);
+        nextIndex = alternatives[Math.floor(Math.random() * alternatives.length)];
+      }
+      goTo(nextIndex);
+    }
+
+    function openHelp(){
+      els.helpPopover.classList.add("open");
+      els.helpPopover.setAttribute("aria-hidden", "false");
+    }
+
+    function closeHelp(){
+      els.helpPopover.classList.remove("open");
+      els.helpPopover.setAttribute("aria-hidden", "true");
+    }
+
+    els.submitBtn.addEventListener("click", () => submitAnswer(false));
+    els.prevBtn.addEventListener("click", () => {
+      if (state.currentIndex > 0) goTo(state.currentIndex - 1);
+    });
+    els.nextBtn.addEventListener("click", () => {
+      if (state.currentIndex < questions.length - 1) goTo(state.currentIndex + 1);
+    });
+    els.randomBtn.addEventListener("click", goToRandomQuestion);
+    els.tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const idx = questions.findIndex(q => q.subject === tab.dataset.subject);
+        if (idx !== -1) goTo(idx);
+      });
+    });
+    els.timerToggle.addEventListener("change", () => {
+      state.timerEnabled = els.timerToggle.checked;
+      clearTimer();
+      state.expired = false;
+      if (state.timerEnabled) {
+        state.timerRemaining = TIMER_SECONDS;
+      }
+      if (state.timerEnabled && !state.submitted) {
+        startTimer();
+      } else {
+        renderTimer();
+      }
+      if (!state.submitted) {
+        renderIdleFeedback();
+      }
+      renderOptions();
+      updateActionButtons();
+    });
+    els.helpBtn.addEventListener("click", openHelp);
+    els.helpCloseBtn.addEventListener("click", closeHelp);
+    document.addEventListener("click", event => {
+      if (!els.helpPopover.contains(event.target) && event.target !== els.helpBtn) {
+        closeHelp();
+      }
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeHelp();
+    });
+
+    renderStats();
+    renderQuestion();
+    els.timerToggle.checked = false;
+    updateActionButtons();
+  </script>
+</body>
+</html>
