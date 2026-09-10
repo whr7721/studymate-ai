@@ -1,0 +1,14 @@
+# Python 生成物
+__pycache__/
+*.pyc
+
+# 本地数据（init_db() 会自动建库并灌入 12 道种子题）
+study.db
+
+# 密钥（阶段4将配置 DeepSeek key，防止误提交）
+.env
+
+# 知识库原料仓库 858MB，代码只读其中 408Notes（1.2MB，已入库）
+# 其余为 PDF 资料，上游：https://github.com/CodePanda66/CSPostgraduate-408 可重新获取
+CSPostgraduate-408/*
+!CSPostgraduate-408/408Notes/

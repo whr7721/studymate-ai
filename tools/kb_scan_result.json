@@ -1,0 +1,569 @@
+{
+  "base": "D:\\codex\\Projects\\studymate-ai\\CSPostgraduate-408\\408Notes",
+  "min_lines": 15,
+  "usable": [
+    {
+      "file": "操作系统/OS_1_绪论/OS_1_1_基本概念.md",
+      "content_lines": 62
+    },
+    {
+      "file": "操作系统/OS_1_绪论/OS_1_2_发展与分类.md",
+      "content_lines": 62
+    },
+    {
+      "file": "操作系统/OS_1_绪论/OS_1_3_运行环境.md",
+      "content_lines": 28
+    },
+    {
+      "file": "操作系统/OS_1_绪论/OS_1_4_体系结构.md",
+      "content_lines": 23
+    },
+    {
+      "file": "操作系统/OS_2_进程管理/OS_2_1_进程与线程.md",
+      "content_lines": 203
+    },
+    {
+      "file": "操作系统/OS_2_进程管理/OS_2_2_处理器调度.md",
+      "content_lines": 95
+    },
+    {
+      "file": "操作系统/OS_2_进程管理/OS_2_4_死锁.md",
+      "content_lines": 73
+    },
+    {
+      "file": "操作系统/OS_3_内存管理/OS_3_1_内存管理基础.md",
+      "content_lines": 185
+    },
+    {
+      "file": "操作系统/OS_3_内存管理/OS_3_2_虚拟内存管理.md",
+      "content_lines": 121
+    },
+    {
+      "file": "操作系统/OS_3_内存管理/OS_3_3_对比.md",
+      "content_lines": 48
+    },
+    {
+      "file": "DataStructure/DS_0_Introduction/DS_Doc_0_0_数据结构基本概念.md",
+      "content_lines": 66
+    },
+    {
+      "file": "DataStructure/DS_0_Introduction/DS_Doc_0_1_算法基本概念.md",
+      "content_lines": 72
+    },
+    {
+      "file": "DataStructure/DS_1_LinearList/DS_Doc_1_0_线性表.md",
+      "content_lines": 22
+    },
+    {
+      "file": "DataStructure/DS_1_LinearList/DS_Doc_1_1_顺序表.md",
+      "content_lines": 139
+    },
+    {
+      "file": "DataStructure/DS_1_LinearList/DS_Doc_1_2_单链表.md",
+      "content_lines": 93
+    },
+    {
+      "file": "DataStructure/DS_1_LinearList/DS_Doc_1_3_双链表.md",
+      "content_lines": 19
+    },
+    {
+      "file": "DataStructure/DS_1_LinearList/DS_Doc_1_4_循环链表.md",
+      "content_lines": 21
+    },
+    {
+      "file": "DataStructure/DS_1_LinearList/DS_Doc_1_5_静态链表.md",
+      "content_lines": 17
+    },
+    {
+      "file": "DataStructure/DS_1_LinearList/DS_Doc_1_6_章节总结.md",
+      "content_lines": 23
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/DS_Doc_2_1_顺序栈.md",
+      "content_lines": 22
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/DS_Doc_2_4_顺序队列.md",
+      "content_lines": 29
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/DS_Doc_2_5_链式队列.md",
+      "content_lines": 23
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/DS_Doc_2_6_双端队列.md",
+      "content_lines": 19
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/DS_Doc_2_7_栈的应用.md",
+      "content_lines": 76
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/DS_Doc_2_8_队列的应用.md",
+      "content_lines": 15
+    },
+    {
+      "file": "DataStructure/DS_3_String/DS_Doc_3_1_串的存储结构.md",
+      "content_lines": 16
+    },
+    {
+      "file": "DataStructure/DS_3_String/DS_Doc_3_2_模式匹配.md",
+      "content_lines": 15
+    },
+    {
+      "file": "DataStructure/DS_3_String/DS_Doc_3_3_KMP算法.md",
+      "content_lines": 30
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/DS_Doc_4_0_树.md",
+      "content_lines": 17
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/DS_Doc_4_4_二叉树的存储结构.md",
+      "content_lines": 18
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/DS_Doc_4_5_二叉树的遍历.md",
+      "content_lines": 22
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/DS_Doc_4_6_二叉树的构造.md",
+      "content_lines": 19
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/DS_Doc_4_7_线索二叉树.md",
+      "content_lines": 24
+    },
+    {
+      "file": "DataStructure/README.md",
+      "content_lines": 18
+    }
+  ],
+  "empty": [
+    {
+      "file": "操作系统/OS_1_绪论/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_2_进程管理/OS_2_3_同步与互斥.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_2_进程管理/README.md",
+      "content_lines": 3
+    },
+    {
+      "file": "操作系统/OS_3_内存管理/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_4_文件管理/OS_4_1_文件系统基础.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_4_文件管理/OS_4_2_文件系统实现.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_4_文件管理/OS_4_3_磁盘组织与管理.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_4_文件管理/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_5_设备管理/OS_5_1_IO管理概述.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_5_设备管理/OS_5_2_IO核心子系统.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_5_设备管理/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/OS_6_补充/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "操作系统/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "DataStructure/DS_0_Introduction/README.md",
+      "content_lines": 6
+    },
+    {
+      "file": "DataStructure/DS_1_LinearList/README.md",
+      "content_lines": 11
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/DS_Doc_2_0_栈.md",
+      "content_lines": 14
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/DS_Doc_2_2_链栈.md",
+      "content_lines": 11
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/DS_Doc_2_3_队列.md",
+      "content_lines": 12
+    },
+    {
+      "file": "DataStructure/DS_2_StackAndQueue/README.md",
+      "content_lines": 13
+    },
+    {
+      "file": "DataStructure/DS_3_String/DS_Doc_3_0_串.md",
+      "content_lines": 14
+    },
+    {
+      "file": "DataStructure/DS_3_String/DS_Doc_3_4_KMP算法的优化.md",
+      "content_lines": 9
+    },
+    {
+      "file": "DataStructure/DS_3_String/README.md",
+      "content_lines": 10
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/DS_Doc_4_1_树的性质.md",
+      "content_lines": 10
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/DS_Doc_4_2_二叉树.md",
+      "content_lines": 12
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/DS_Doc_4_3_二叉树的性质.md",
+      "content_lines": 11
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/DS_Doc_4_8_二叉树的线索化.md",
+      "content_lines": 8
+    },
+    {
+      "file": "DataStructure/DS_4_TreeAndBinaryTree/README.md",
+      "content_lines": 14
+    },
+    {
+      "file": "计算机组成原理/CO_1_概述/CO_1_0_计算机系统概述.md",
+      "content_lines": 14
+    },
+    {
+      "file": "计算机组成原理/CO_1_概述/CO_1_1_计算机发展历程.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_1_概述/CO_1_2_计算机系统层次结构.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_1_概述/CO_1_3_计算机性能指标.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_1_概述/CO_1_4_辅助知识点.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_1_概述/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_2_数据/CO_2_1_数制与编码.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_2_数据/CO_2_2_定点数的表示和运算.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_2_数据/CO_2_3_浮点数的表示和运算.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_2_数据/CO_2_4_算数逻辑单元.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_2_数据/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_3_存储器/CO_3_1_存储器的基本概念.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_3_存储器/CO_3_2_存储器的层次化结构.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_3_存储器/CO_3_3_半导体随机存取存储器.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_3_存储器/CO_3_4_主存储器与CPU的链接.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_3_存储器/CO_3_5_双口RAM和多模块存储器.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_3_存储器/CO_3_6_Cache.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_3_存储器/CO_3_7_虚拟存储器.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_3_存储器/CO_3_8_外存储器.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_3_存储器/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_4_指令系统/CO_4_1_指令格式.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_4_指令系统/CO_4_2_指令的寻址方式.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_4_指令系统/CO_4_3_CISC和RISC的基本概念.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_4_指令系统/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_5_CPU/CO_5_1_CPU的功能和基本结构.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_5_CPU/CO_5_2_指令执行过程.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_5_CPU/CO_5_3_数据通路的功能和基本结构.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_5_CPU/CO_5_4_控制器的功能和工作原理.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_5_CPU/CO_5_5_指令流水线.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_5_CPU/CO_5_6_中断系统.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_5_CPU/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_6_总线/CO_6_1_总线概述.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_6_总线/CO_6_2_总线仲裁.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_6_总线/CO_6_3_总线操作和定时.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_6_总线/CO_6_4_总线标准.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_6_总线/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_7_IO/CO_7_1_IO系统基本概念.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_7_IO/CO_7_2_外部设备.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_7_IO/CO_7_3_IO接口.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_7_IO/CO_7_4_IO方式.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/CO_7_IO/README.md",
+      "content_lines": 5
+    },
+    {
+      "file": "计算机组成原理/CO_8_Other/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机组成原理/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_1_概述/CN_1_1_概述.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_1_概述/CN_1_2_体系结构与参考模型.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_1_概述/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_2_物理层/CN_2_1_通信基础.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_2_物理层/CN_2_2_传输介质.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_2_物理层/CN_2_3_物理层设备.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_2_物理层/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_3_数据链路层/CN_3_1_数据链路层功能与组帧.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_3_数据链路层/CN_3_2_差错控制.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_3_数据链路层/CN_3_3_流量控制与可靠传输机制.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_3_数据链路层/CN_3_4_介质访问控制.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_3_数据链路层/CN_3_5_局域网.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_3_数据链路层/CN_3_6_广域网.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_3_数据链路层/CN_3_7_链路层设备.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_3_数据链路层/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_4_网络层/CN_4_1_网络层功能.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_4_网络层/CN_4_2_路由算法.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_4_网络层/CN_4_3_IPV4.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_4_网络层/CN_4_4_IPV6.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_4_网络层/CN_4_5_路由协议.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_4_网络层/CN_4_6_IP组播.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_4_网络层/CN_4_7_移动IP.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_4_网络层/CN_4_8_网络层设备.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_4_网络层/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_5_传输层/CN_5_1_传输层服务.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_5_传输层/CN_5_2_UDP.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_5_传输层/CN_5_3_TCP.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_5_传输层/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_6_应用层/CN_6_1_网络应用模型.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_6_应用层/CN_6_2_DNS系统.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_6_应用层/CN_6_3_FTP.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_6_应用层/CN_6_4_电子邮件.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_6_应用层/CN_6_5_WWW.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_6_应用层/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/CN_7_补充/README.md",
+      "content_lines": 4
+    },
+    {
+      "file": "计算机网络/README.md",
+      "content_lines": 4
+    }
+  ],
+  "total_usable": 34
+}
