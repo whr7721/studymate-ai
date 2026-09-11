@@ -130,6 +130,17 @@ def init_db():
             )
             """
         )
+        # CREATE TABLE IF NOT EXISTS 不会给已存在的旧表加列，这里手动补（幂等）
+        existing_cols = {
+            row[1] for row in conn.execute("PRAGMA table_info(questions)").fetchall()
+        }
+        for column_def in ("year INTEGER", "source TEXT", "qtype TEXT DEFAULT 'chapter'"):
+            if column_def.split()[0] not in existing_cols:
+                conn.execute(f"ALTER TABLE questions ADD COLUMN {column_def}")
+        # 老库存量行补默认来源（新种子由下方 INSERT 直接带 source）
+        conn.execute(
+            "UPDATE questions SET source = '自编入门题' WHERE source IS NULL"
+        )
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS answers (
@@ -147,8 +158,9 @@ def init_db():
             conn.executemany(
                 """
                 INSERT INTO questions (
-                    subject, text, option_a, option_b, option_c, option_d, answer, analysis
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    subject, text, option_a, option_b, option_c, option_d,
+                    answer, analysis, year, source, qtype
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, 'chapter')
                 """,
                 [
                     (
@@ -160,6 +172,7 @@ def init_db():
                         question["options"][3],
                         question["answer"],
                         question["analysis"],
+                        "自编入门题",
                     )
                     for question in QUESTIONS
                 ],
@@ -189,6 +202,9 @@ def row_to_question(row):
         ],
         "answer": row["answer"],
         "analysis": row["analysis"],
+        "year": row["year"],
+        "source": row["source"],
+        "qtype": row["qtype"],
     }
 
 

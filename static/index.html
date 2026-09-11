@@ -27,6 +27,11 @@
     .tabs{display:flex;gap:10px;flex-wrap:wrap}
     .tab{border:1px solid var(--border);background:#fff;color:var(--text);padding:10px 16px;border-radius:999px;font-size:14px;cursor:pointer}
     .tab.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .year-select{border:1px solid var(--border);background:#fff;padding:10px 16px;border-radius:999px;font-size:14px;cursor:pointer;color:var(--text)}
+    .year-select:disabled{opacity:.45;cursor:not-allowed}
+    .badge-stack{display:grid;gap:8px;justify-items:start}
+    .badge.source{background:rgba(30,58,95,.08);color:var(--primary)}
     .main{display:grid;gap:18px;flex:1}.panel{padding:22px}
     .question-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px;align-items:flex-start}
     .question-meta{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}.badge,.progress,.timer{display:inline-flex;align-items:center}
@@ -61,7 +66,7 @@
       <div class="header-tools">
         <div class="stats">
           <div class="stat"><span class="label">当前科目</span><span class="value" id="currentSubject">数据结构</span></div>
-          <div class="stat"><span class="label">已作答</span><span class="value"><span id="answeredCount">0</span>/12</span></div>
+          <div class="stat"><span class="label">已作答</span><span class="value"><span id="answeredCount">0</span>/<span id="totalCount">--</span></span></div>
           <div class="stat"><span class="label">正确数</span><span class="value" id="correctCount">0</span></div>
           <div class="stat"><span class="label">正确率</span><span class="value" id="accuracyRate">0%</span></div>
         </div>
@@ -70,19 +75,31 @@
       </div>
     </header>
 
-    <nav class="tabs" aria-label="科目切换">
+    <nav class="tabs" id="subjectTabs" aria-label="科目切换">
       <button class="tab active" data-subject="数据结构">数据结构</button>
       <button class="tab" data-subject="组成原理">组成原理</button>
       <button class="tab" data-subject="操作系统">操作系统</button>
       <button class="tab" data-subject="计算机网络">计算机网络</button>
     </nav>
 
+    <nav class="tabs filter-bar" id="filterBar" aria-label="题目范围筛选">
+      <button class="tab active" data-qtype="all">全部题目</button>
+      <button class="tab" data-qtype="exam">历年真题</button>
+      <button class="tab" data-qtype="chapter">章节练习</button>
+      <select class="year-select" id="yearSelect" aria-label="真题年份" disabled>
+        <option value="">全部年份</option>
+      </select>
+    </nav>
+
     <main class="main">
       <section class="panel">
         <div class="question-head">
-          <div class="badge" id="questionSubject">数据结构</div>
+          <div class="badge-stack">
+            <div class="badge" id="questionSubject">数据结构</div>
+            <div class="badge source" id="questionSource"></div>
+          </div>
           <div class="question-meta">
-            <div class="progress" id="questionProgress">第 1 / 12 题</div>
+            <div class="progress" id="questionProgress">第 -- 题</div>
             <div class="timer hidden" id="questionTimer">01:30</div>
           </div>
         </div>
@@ -118,7 +135,7 @@
       <h3 class="help-popover-title">使用说明</h3>
       <button class="help-popover-close" id="helpCloseBtn" type="button" aria-label="关闭说明">×</button>
     </div>
-    <div>这是一套单题练习页面，适合按科目刷题和查看解析。</div>
+    <div>这是一套单题练习页面：按科目切换，可筛选历年真题（支持按年份）或章节练习，答题后查看解析。</div>
   </div>
 
   <script>
@@ -126,6 +143,7 @@
     const API_URL = "/api/questions";
     const HISTORY_API_URL = "/api/history";
     let questions = [];
+    let view = [];
     let questionsLoaded = false;
     let loadError = "";
     let historyRecords = [];
@@ -140,6 +158,8 @@
       score: 0,
       done: [],
       correct: [],
+      filterQtype: "all",
+      filterYear: null,
       timerEnabled: false,
       timerRemaining: TIMER_SECONDS,
       timerId: null
@@ -168,7 +188,11 @@
       historyModal: document.getElementById("historyModal"),
       historyCloseBtn: document.getElementById("historyCloseBtn"),
       historyContent: document.getElementById("historyContent"),
-      tabs: Array.from(document.querySelectorAll(".tab"))
+      tabs: Array.from(document.querySelectorAll("#subjectTabs .tab")),
+      qtypeTabs: Array.from(document.querySelectorAll("#filterBar .tab")),
+      yearSelect: document.getElementById("yearSelect"),
+      questionSource: document.getElementById("questionSource"),
+      totalCount: document.getElementById("totalCount")
     };
 
     function formatTime(totalSeconds){
@@ -180,10 +204,29 @@
       if (state.timerId !== null) { clearInterval(state.timerId); state.timerId = null; }
     }
 
+    function buildView(){
+      view = questions.filter(q => {
+        if (state.filterQtype === "exam" && q.qtype !== "exam") return false;
+        if (state.filterQtype === "chapter" && q.qtype !== "chapter") return false;
+        if (state.filterYear && q.year !== state.filterYear) return false;
+        return true;
+      });
+    }
+
+    function applyFilter(){
+      buildView(); resetStateForQuestions(); renderQuestion(); refreshHistoryButton();
+    }
+
+    function populateYearOptions(){
+      const years = [...new Set(questions.filter(q => q.qtype === "exam" && q.year).map(q => q.year))].sort((a, b) => a - b);
+      els.yearSelect.innerHTML = `<option value="">全部年份</option>` + years.map(y => `<option value="${y}">${y} 年</option>`).join("");
+      els.yearSelect.value = state.filterYear ? String(state.filterYear) : "";
+    }
+
     function resetStateForQuestions(){
       state.currentIndex = 0; state.selected = null; state.submitted = false; state.expired = false; state.score = 0;
-      state.done = new Array(questions.length).fill(false);
-      state.correct = new Array(questions.length).fill(false);
+      state.done = new Array(view.length).fill(false);
+      state.correct = new Array(view.length).fill(false);
       state.timerRemaining = TIMER_SECONDS;
       clearTimer();
     }
@@ -205,7 +248,7 @@
 
     function refreshHistoryButton(){
       const uniqueAnswered = new Set(historyRecords.map(r => r.question_id)).size;
-      const total = questionsLoaded ? questions.length : 0;
+      const total = questionsLoaded ? view.length : 0;
       els.historyBtn.textContent = `答题记录(${uniqueAnswered}/${total})`;
     }
 
@@ -213,13 +256,13 @@
       const locked = !questionsLoaded || !!loadError;
       els.submitBtn.disabled = locked || state.submitted || state.expired;
       els.prevBtn.disabled = locked || state.currentIndex === 0;
-      els.nextBtn.disabled = locked || state.currentIndex === questions.length - 1;
+      els.nextBtn.disabled = locked || state.currentIndex === view.length - 1;
     }
 
     function setActiveTab(subject){ els.tabs.forEach(tab => tab.classList.toggle("active", tab.dataset.subject === subject)); }
 
     function renderOptions(){
-      const q = questions[state.currentIndex];
+      const q = view[state.currentIndex];
       Array.from(els.options.querySelectorAll(".option")).forEach((node, idx) => {
         node.classList.toggle("selected", state.selected === idx && !state.submitted);
         node.classList.toggle("correct", state.submitted && idx === q.answer);
@@ -229,7 +272,7 @@
     }
 
     function showResult(){
-      const q = questions[state.currentIndex];
+      const q = view[state.currentIndex];
       const isCorrect = state.selected === q.answer;
       const answerLetter = String.fromCharCode(65 + q.answer);
       const selectedLetter = state.selected === null ? "未选择" : String.fromCharCode(65 + state.selected);
@@ -268,13 +311,13 @@
           item.className = "history-item";
           item.innerHTML = `
             <div class="history-item-main">
-              <span>第 ${itemData.question_id} 题</span>
+              <span>${q && q.source ? q.source : "第 " + itemData.question_id + " 题"}</span>
               <span>${itemData.subject}</span>
               <span>${itemData.is_correct ? "✅" : "❌"}</span>
             </div>
             <div class="history-item-answer">你选的答案：${q ? getAnswerLabelForQuestion(q, itemData.selected_answer) : `选项 ${String.fromCharCode(65 + itemData.selected_answer)}`}</div>
           `;
-          item.addEventListener("click", () => { closeHistory(); const idx = questions.findIndex(q => q.id === itemData.question_id); if (idx !== -1) goTo(idx); });
+          item.addEventListener("click", () => { closeHistory(); const idx = view.findIndex(q => q.id === itemData.question_id); if (idx !== -1) goTo(idx); });
           list.appendChild(item);
         });
         group.appendChild(list); wrapper.appendChild(group);
@@ -322,10 +365,10 @@
 
     function renderQuestion(){
       if (loadError) { els.currentSubject.textContent = "加载失败"; els.questionSubject.textContent = "错误"; els.questionProgress.textContent = "题库加载失败"; els.questionText.textContent = "题目加载失败，请确认后端已启动后刷新页面重试。"; els.options.innerHTML = ""; renderIdleFeedback(loadError); clearTimer(); renderTimer(); updateActionButtons(); return; }
-      if (!questionsLoaded || questions.length === 0) { els.currentSubject.textContent = "加载中"; els.questionSubject.textContent = "加载中"; els.questionProgress.textContent = "第 0 / 0 题"; els.questionText.textContent = "正在从后端加载题目..."; els.options.innerHTML = ""; renderIdleFeedback("正在从后端加载题目，请稍候。"); clearTimer(); renderTimer(); updateActionButtons(); return; }
+      if (!questionsLoaded || view.length === 0) { els.currentSubject.textContent = questionsLoaded ? "无题目" : "加载中"; els.questionSubject.textContent = questionsLoaded ? "无题目" : "加载中"; els.questionProgress.textContent = "第 0 / 0 题"; els.questionText.textContent = questionsLoaded ? "当前筛选条件下没有题目，试试放宽筛选。" : "正在从后端加载题目..."; els.questionSource.textContent = ""; els.options.innerHTML = ""; renderIdleFeedback(questionsLoaded ? "当前筛选条件下没有题目。" : "正在从后端加载题目，请稍候。"); clearTimer(); renderTimer(); updateActionButtons(); return; }
 
-      const q = questions[state.currentIndex];
-      els.currentSubject.textContent = q.subject; els.questionSubject.textContent = q.subject; els.questionProgress.textContent = `第 ${state.currentIndex + 1} / ${questions.length} 题`; els.questionText.textContent = q.text; setActiveTab(q.subject);
+      const q = view[state.currentIndex];
+      els.currentSubject.textContent = q.subject; els.questionSubject.textContent = q.subject; els.questionSource.textContent = q.source || ""; els.questionProgress.textContent = `第 ${state.currentIndex + 1} / ${view.length} 题`; els.questionText.textContent = q.text; setActiveTab(q.subject);
       els.options.innerHTML = "";
       q.options.forEach((opt, idx) => {
         const btn = document.createElement("button");
@@ -343,20 +386,20 @@
     }
 
     function submitAnswer(fromTimer = false){
-      if (!questionsLoaded || loadError || questions.length === 0) return;
+      if (!questionsLoaded || loadError || view.length === 0) return;
       if (state.selected === null) { if (fromTimer) { handleTimerExpired(); } else { renderIdleFeedback("请先选择一个选项。"); } return; }
       if (!state.done[state.currentIndex]) {
         state.done[state.currentIndex] = true;
-        state.correct[state.currentIndex] = state.selected === questions[state.currentIndex].answer;
+        state.correct[state.currentIndex] = state.selected === view[state.currentIndex].answer;
         if (state.correct[state.currentIndex]) state.score += 1;
       } else {
-        state.correct[state.currentIndex] = state.selected === questions[state.currentIndex].answer;
+        state.correct[state.currentIndex] = state.selected === view[state.currentIndex].answer;
       }
       state.submitted = true; state.expired = false; clearTimer(); showResult(); renderTimer(); updateActionButtons(); void persistAnswer(); void refreshHistory();
     }
 
     async function persistAnswer(){
-      const q = questions[state.currentIndex];
+      const q = view[state.currentIndex];
       try {
         await fetch("/api/submit",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question_id:q.id,selected_answer:state.selected})});
         await refreshStats();
@@ -370,11 +413,11 @@
       } catch (error) { console.error("Failed to load stats", error); }
     }
 
-    function goTo(index){ if (!questionsLoaded || loadError || questions.length === 0) return; clearTimer(); state.currentIndex = index; state.selected = null; state.submitted = false; state.expired = false; renderQuestion(); }
+    function goTo(index){ if (!questionsLoaded || loadError || view.length === 0) return; clearTimer(); state.currentIndex = index; state.selected = null; state.submitted = false; state.expired = false; renderQuestion(); }
     function goToRandomQuestion(){
-      if (!questionsLoaded || loadError || questions.length === 0) return;
-      const subject = questions[state.currentIndex].subject;
-      const indices = questions.map((q, idx) => ({ q, idx })).filter(item => item.q.subject === subject).map(item => item.idx);
+      if (!questionsLoaded || loadError || view.length === 0) return;
+      const subject = view[state.currentIndex].subject;
+      const indices = view.map((q, idx) => ({ q, idx })).filter(item => item.q.subject === subject).map(item => item.idx);
       if (!indices.length) return;
       let nextIndex = indices[Math.floor(Math.random() * indices.length)];
       if (indices.length > 1 && nextIndex === state.currentIndex) nextIndex = indices.filter(i => i !== state.currentIndex)[0];
@@ -386,11 +429,19 @@
 
     els.submitBtn.addEventListener("click", () => submitAnswer(false));
     els.prevBtn.addEventListener("click", () => { if (state.currentIndex > 0) goTo(state.currentIndex - 1); });
-    els.nextBtn.addEventListener("click", () => { if (state.currentIndex < questions.length - 1) goTo(state.currentIndex + 1); });
+    els.nextBtn.addEventListener("click", () => { if (state.currentIndex < view.length - 1) goTo(state.currentIndex + 1); });
     els.randomBtn.addEventListener("click", goToRandomQuestion);
     els.historyBtn.addEventListener("click", openHistory);
     els.historyCloseBtn.addEventListener("click", closeHistory);
-    els.tabs.forEach(tab => tab.addEventListener("click", () => { const idx = questions.findIndex(q => q.subject === tab.dataset.subject); if (idx !== -1) goTo(idx); }));
+    els.tabs.forEach(tab => tab.addEventListener("click", () => { const idx = view.findIndex(q => q.subject === tab.dataset.subject); if (idx !== -1) goTo(idx); }));
+    els.qtypeTabs.forEach(tab => tab.addEventListener("click", () => {
+      state.filterQtype = tab.dataset.qtype;
+      els.qtypeTabs.forEach(t => t.classList.toggle("active", t === tab));
+      if (state.filterQtype !== "exam") { state.filterYear = null; els.yearSelect.value = ""; }
+      els.yearSelect.disabled = state.filterQtype !== "exam";
+      applyFilter();
+    }));
+    els.yearSelect.addEventListener("change", () => { state.filterYear = els.yearSelect.value ? Number(els.yearSelect.value) : null; applyFilter(); });
     els.timerToggle.addEventListener("change", () => { state.timerEnabled = els.timerToggle.checked; clearTimer(); state.expired = false; if (state.timerEnabled) state.timerRemaining = TIMER_SECONDS; state.timerEnabled && !state.submitted && questionsLoaded ? startTimer() : renderTimer(); if (!state.submitted) renderIdleFeedback(questionsLoaded ? "请选择一个答案，然后点击“提交答案”。" : "正在从后端加载题目，请稍候。"); renderOptions(); updateActionButtons(); });
     els.helpBtn.addEventListener("click", openHelp); els.helpCloseBtn.addEventListener("click", closeHelp);
     document.addEventListener("click", event => { if (event.target === els.historyModal) closeHistory(); if (!els.helpPopover.contains(event.target) && event.target !== els.helpBtn) closeHelp(); });
@@ -402,7 +453,9 @@
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         questions = Array.isArray(data.questions) ? data.questions : [];
-        questionsLoaded = true; loadError = ""; resetStateForQuestions(); renderQuestion(); refreshStats(); refreshHistory();
+        questionsLoaded = true; loadError = "";
+        populateYearOptions(); els.totalCount.textContent = questions.length;
+        buildView(); resetStateForQuestions(); renderQuestion(); refreshStats(); refreshHistory();
       } catch (error) {
         questions = []; questionsLoaded = false; loadError = "题目加载失败，请确认后端已启动（0.0.0.0:8000）后刷新页面。"; clearTimer(); renderQuestion();
       }

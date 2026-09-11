@@ -4,9 +4,17 @@ __pycache__/
 
 # 本地数据（init_db() 会自动建库并灌入 12 道种子题）
 study.db
+study.db.bak-*
 
 # 密钥（阶段4将配置 DeepSeek key，防止误提交）
 .env
+
+# 第三方题库原始数据（ISC，来源 https://github.com/lij768423-svg/408-）
+# 版权考虑不入公开仓库，导入脚本按需下载
+tools/vendor/
+
+# 浏览器测试截图（本地证据，不入库）
+gui-test-screenshots/
 
 # 知识库原料仓库 858MB，代码只读其中 408Notes（1.2MB，已入库）
 # 其余为 PDF 资料，上游：https://github.com/CodePanda66/CSPostgraduate-408 可重新获取
