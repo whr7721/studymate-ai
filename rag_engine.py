@@ -17,6 +17,25 @@ BASE_DIR = Path(__file__).resolve().parent
 DEFAULT_NOTES_ROOT = BASE_DIR / "CSPostgraduate-408" / "408Notes"
 DEFAULT_SOURCE_DIRS = ["操作系统", "DataStructure", "计算机组成原理", "计算机网络"]
 
+
+def _load_dotenv(path: Path = BASE_DIR / ".env") -> None:
+    """读取项目根目录的 .env（KEY=VALUE 每行一条），已存在的环境变量不覆盖。
+
+    零依赖的手工实现，行为等价于 python-dotenv 的最小用法；
+    .env 已在 .gitignore 中，密钥不会进仓库。
+    """
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+_load_dotenv()
+
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
 IMAGE_RE = re.compile(r"!\[[^\]]*\]\([^)]+\)")
 LINK_RE = re.compile(r"\[([^\]]+)\]\([^)]+\)")
