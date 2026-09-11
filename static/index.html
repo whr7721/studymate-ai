@@ -32,6 +32,12 @@
     .year-select:disabled{opacity:.45;cursor:not-allowed}
     .badge-stack{display:grid;gap:8px;justify-items:start}
     .badge.source{background:rgba(30,58,95,.08);color:var(--primary)}
+    .rag-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+    .rag-input{width:100%;min-height:80px;border:1px solid var(--border);border-radius:14px;padding:12px 14px;font:inherit;resize:vertical;background:#fff}
+    .rag-status{color:var(--muted);font-size:14px;margin-top:8px}
+    .rag-answer{margin-top:12px;line-height:1.8;border-left:3px solid var(--primary);padding:2px 0 2px 12px}
+    .rag-sources{margin-top:12px;color:var(--muted);font-size:13px;line-height:1.7}
+    .rag-sources-title{font-weight:700;margin-bottom:4px}
     .main{display:grid;gap:18px;flex:1}.panel{padding:22px}
     .question-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px;align-items:flex-start}
     .question-meta{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}.badge,.progress,.timer{display:inline-flex;align-items:center}
@@ -115,6 +121,7 @@
         <button class="btn btn-ghost" id="nextBtn">下一题</button>
         <button class="btn btn-ghost" id="randomBtn">随机一题</button>
         <button class="btn btn-ghost" id="historyBtn">答题记录(0/12)</button>
+        <button class="btn btn-ghost" id="ragBtn">AI 问答</button>
         <button class="btn btn-primary" id="submitBtn">提交答案</button>
       </div>
     </section>
@@ -130,12 +137,35 @@
     </div>
   </div>
 
+  <div class="history-modal" id="ragModal" aria-hidden="true">
+    <div class="history-panel" role="dialog" aria-modal="true" aria-labelledby="ragTitle">
+      <div class="history-header">
+        <h3 class="history-title" id="ragTitle">AI 知识问答 · 基于 408 笔记检索</h3>
+        <button class="history-close" id="ragCloseBtn" type="button" aria-label="关闭AI问答">×</button>
+      </div>
+      <div class="rag-controls">
+        <select class="year-select" id="ragSubject" aria-label="限定科目">
+          <option value="">全部科目</option>
+          <option value="数据结构">数据结构</option>
+          <option value="组成原理">组成原理</option>
+          <option value="操作系统">操作系统</option>
+          <option value="计算机网络">计算机网络</option>
+        </select>
+        <button class="btn btn-primary" id="ragAskBtn" type="button">提问</button>
+      </div>
+      <textarea class="rag-input" id="ragInput" placeholder="例如：什么是死锁？产生的必要条件有哪些？"></textarea>
+      <div class="rag-status" id="ragStatus"></div>
+      <div class="rag-answer" id="ragAnswer"></div>
+      <div class="rag-sources" id="ragSources"></div>
+    </div>
+  </div>
+
   <div class="help-popover" id="helpPopover" aria-hidden="true">
     <div class="help-popover-header">
       <h3 class="help-popover-title">使用说明</h3>
       <button class="help-popover-close" id="helpCloseBtn" type="button" aria-label="关闭说明">×</button>
     </div>
-    <div>这是一套单题练习页面：按科目切换，可筛选历年真题（支持按年份）或章节练习，答题后查看解析。</div>
+    <div>这是一套单题练习页面：按科目切换，可筛选历年真题（支持按年份）或章节练习，答题后查看解析；点"AI 问答"可以直接问 408 知识点（基于本地知识库检索作答）。</div>
   </div>
 
   <script>
@@ -192,7 +222,16 @@
       qtypeTabs: Array.from(document.querySelectorAll("#filterBar .tab")),
       yearSelect: document.getElementById("yearSelect"),
       questionSource: document.getElementById("questionSource"),
-      totalCount: document.getElementById("totalCount")
+      totalCount: document.getElementById("totalCount"),
+      ragBtn: document.getElementById("ragBtn"),
+      ragModal: document.getElementById("ragModal"),
+      ragCloseBtn: document.getElementById("ragCloseBtn"),
+      ragSubject: document.getElementById("ragSubject"),
+      ragInput: document.getElementById("ragInput"),
+      ragAskBtn: document.getElementById("ragAskBtn"),
+      ragStatus: document.getElementById("ragStatus"),
+      ragAnswer: document.getElementById("ragAnswer"),
+      ragSources: document.getElementById("ragSources")
     };
 
     function formatTime(totalSeconds){
@@ -343,6 +382,44 @@
     function openHistory(){ renderHistory(); els.historyModal.setAttribute("aria-hidden","false"); }
     function closeHistory(){ els.historyModal.setAttribute("aria-hidden","true"); }
 
+    function renderMarkdownLite(text){
+      // 先转义 HTML 再做极简 Markdown（加粗+换行），防止内容里带标签破坏页面
+      const escaped = String(text).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      return escaped.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>");
+    }
+
+    function openRag(){ els.ragModal.setAttribute("aria-hidden","false"); els.ragInput.focus(); }
+    function closeRag(){ els.ragModal.setAttribute("aria-hidden","true"); }
+
+    async function askRag(){
+      const query = els.ragInput.value.trim();
+      if (!query) { els.ragStatus.textContent = "请先输入问题。"; return; }
+      const subject = els.ragSubject.value || null;
+      els.ragAskBtn.disabled = true;
+      els.ragStatus.textContent = "正在检索知识库并生成回答，稍等…";
+      els.ragAnswer.textContent = ""; els.ragSources.textContent = "";
+      try {
+        const response = await fetch("/api/rag/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query, subject, top_k: 5 })
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        els.ragStatus.textContent = "";
+        els.ragAnswer.innerHTML = renderMarkdownLite(data.answer || "（模型没有返回内容）");
+        if (Array.isArray(data.sources) && data.sources.length) {
+          els.ragSources.innerHTML = `<div class="rag-sources-title">参考来源（按相关度排序）：</div>`
+            + data.sources.map(s => `<div>· ${s.source_path}</div>`).join("");
+        }
+      } catch (error) {
+        console.error("rag ask failed", error);
+        els.ragStatus.textContent = "请求失败：请确认后端已启动，且在校园网内（生成用的是天大模型）。";
+      } finally {
+        els.ragAskBtn.disabled = false;
+      }
+    }
+
     function handleTimerExpired(){
       if (state.submitted || state.expired) return;
       if (state.selected !== null) { submitAnswer(true); return; }
@@ -433,6 +510,9 @@
     els.randomBtn.addEventListener("click", goToRandomQuestion);
     els.historyBtn.addEventListener("click", openHistory);
     els.historyCloseBtn.addEventListener("click", closeHistory);
+    els.ragBtn.addEventListener("click", openRag);
+    els.ragCloseBtn.addEventListener("click", closeRag);
+    els.ragAskBtn.addEventListener("click", askRag);
     els.tabs.forEach(tab => tab.addEventListener("click", () => { const idx = view.findIndex(q => q.subject === tab.dataset.subject); if (idx !== -1) goTo(idx); }));
     els.qtypeTabs.forEach(tab => tab.addEventListener("click", () => {
       state.filterQtype = tab.dataset.qtype;
@@ -444,8 +524,8 @@
     els.yearSelect.addEventListener("change", () => { state.filterYear = els.yearSelect.value ? Number(els.yearSelect.value) : null; applyFilter(); });
     els.timerToggle.addEventListener("change", () => { state.timerEnabled = els.timerToggle.checked; clearTimer(); state.expired = false; if (state.timerEnabled) state.timerRemaining = TIMER_SECONDS; state.timerEnabled && !state.submitted && questionsLoaded ? startTimer() : renderTimer(); if (!state.submitted) renderIdleFeedback(questionsLoaded ? "请选择一个答案，然后点击“提交答案”。" : "正在从后端加载题目，请稍候。"); renderOptions(); updateActionButtons(); });
     els.helpBtn.addEventListener("click", openHelp); els.helpCloseBtn.addEventListener("click", closeHelp);
-    document.addEventListener("click", event => { if (event.target === els.historyModal) closeHistory(); if (!els.helpPopover.contains(event.target) && event.target !== els.helpBtn) closeHelp(); });
-    document.addEventListener("keydown", event => { if (event.key === "Escape") { closeHelp(); closeHistory(); } });
+    document.addEventListener("click", event => { if (event.target === els.historyModal) closeHistory(); if (event.target === els.ragModal) closeRag(); if (!els.helpPopover.contains(event.target) && event.target !== els.helpBtn) closeHelp(); });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") { closeHelp(); closeHistory(); closeRag(); } });
 
     async function loadQuestions(){
       try {
