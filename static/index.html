@@ -38,6 +38,7 @@
     .rag-answer{margin-top:12px;line-height:1.8;border-left:3px solid var(--primary);padding:2px 0 2px 12px}
     .rag-sources{margin-top:12px;color:var(--muted);font-size:13px;line-height:1.7}
     .rag-sources-title{font-weight:700;margin-bottom:4px}
+    .feedback .btn{margin-top:10px}
     .main{display:grid;gap:18px;flex:1}.panel{padding:22px}
     .question-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px;align-items:flex-start}
     .question-meta{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}.badge,.progress,.timer{display:inline-flex;align-items:center}
@@ -317,6 +318,31 @@
       const selectedLetter = state.selected === null ? "未选择" : String.fromCharCode(65 + state.selected);
       els.feedback.className = `feedback ${isCorrect ? "success" : "error"}`;
       els.feedback.innerHTML = `<div class="title">${isCorrect ? "回答正确！" : "回答错误。"}</div><div>你的答案：<strong>${selectedLetter}</strong>；正确答案：<strong>${answerLetter}</strong></div><div class="analysis">${q.analysis}</div>`;
+      const askAiBtn = document.createElement("button");
+      askAiBtn.type = "button";
+      askAiBtn.className = "btn btn-ghost";
+      askAiBtn.textContent = "AI 讲解这题";
+      askAiBtn.addEventListener("click", askAiAboutCurrentQuestion);
+      els.feedback.appendChild(askAiBtn);
+    }
+
+    function buildQuestionQuery(q){
+      // 题干里的 <table> 等 HTML 标签对关键词检索是噪音，去掉；截断防止超长
+      const stem = String(q.text)
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 200);
+      return `请讲解这道${q.subject}题考查的知识点：${stem}`;
+    }
+
+    function askAiAboutCurrentQuestion(){
+      const q = view[state.currentIndex];
+      if (!q) return;
+      els.ragSubject.value = "";  // 不限定科目：计网/计组语料未补齐，限定会漏检
+      els.ragInput.value = buildQuestionQuery(q);
+      openRag();
+      askRag();
     }
 
     function renderIdleFeedback(message = "请选择一个答案，然后点击“提交答案”。"){
